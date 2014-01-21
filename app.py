@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, request
 import requests
 import os
 from flask.ext.cache import Cache
@@ -26,12 +26,12 @@ def index():
 @app.route('/api/<endpoint>/')
 def api(endpoint):
     request_url = '%s/%s' % (api_url, endpoint)
-    proxy_request = make_proxy(request_url)
+    proxy_request = make_proxy(request_url, request.args)
     return Response(proxy_request.text)
 
 @cache.memoize(proxy_cache * 60)
-def make_proxy(url):
-    return requests.get(url)
+def make_proxy(url, params):
+    return requests.get(url, params=params)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
