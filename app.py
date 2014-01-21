@@ -23,7 +23,7 @@ cache.init_app(app, config = cache_config)
 def index():
     return render_template('index.html')
 
-@app.route('/api/<endpoint>')
+@app.route('/api/<endpoint>/')
 def api(endpoint):
     request_url = '%s/%s' % (api_url, endpoint)
     proxy_request = make_proxy(request_url)
