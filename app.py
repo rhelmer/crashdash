@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, jsonify
+from flask import Flask, Response
 import requests
 import os
 from flask.ext.cache import Cache
@@ -23,20 +23,14 @@ cache.init_app(app, config = cache_config)
 def api(endpoint):
     request_url = '%s/%s' % (api_url, endpoint)
     proxy_request = make_proxy(request_url)
-    return Response(proxy_request['text'],
-                    proxy_request['status_code'],
-                    proxy_request['headers'])
+    return Response(proxy_request['text'])
 
 @cache.memoize(proxy_cache * 60)
 def make_proxy(url):
-    r.requests.get(url)
-    return {
-        'text': r.text,
-        'status_code': r.status_code,
-        'headers': r.headers,
-    }
+    return requests.get(url)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
+    app.debug = True
     app.run(host='0.0.0.0', port=port)
