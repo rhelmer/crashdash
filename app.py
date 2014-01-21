@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 import requests
 import os
 from flask.ext.cache import Cache
@@ -19,7 +19,11 @@ cache_config = {
 cache = Cache(config = cache_config)
 cache.init_app(app, config = cache_config)
 
-@app.route('/api/<endpoint>', methods=['GET'])
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/<endpoint>')
 def api(endpoint):
     request_url = '%s/%s' % (api_url, endpoint)
     proxy_request = make_proxy(request_url)
