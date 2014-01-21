@@ -37,3 +37,21 @@ section {
 #loading, #no-results, #resultsTable {
   display: none;
 }
+
+ul {
+  list-style: none;
+}
+
+li {
+  text-align: center;
+  height: 100px;
+  width: 220px;
+  background: hsla(200, 30%, 30%, .4);
+  margin: 5px;
+  float: left;
+  border-radius:20px;
+}
+
+li:nth-child(2n+0) { 
+  clear: left;
+}
