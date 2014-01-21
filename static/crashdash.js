@@ -9,8 +9,12 @@ $(function(){
         });
         $.each(featured, function(product, version) {
             $('#product-list')
-                .append('<a href="' + product + '"><li>' + 
-                        product + '</li></a>');
+                .append('<a href="' + product + '">' +
+                        '<li>' +
+                        product + '<br>' +
+                        '<img src="/static/' + product + '.png">' +
+                        '</li>' +
+                        '</a>');
         });
     });
 
