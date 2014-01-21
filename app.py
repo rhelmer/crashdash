@@ -23,7 +23,7 @@ cache.init_app(app, config = cache_config)
 def api(endpoint):
     request_url = '%s/%s' % (api_url, endpoint)
     proxy_request = make_proxy(request_url)
-    return Response(proxy_request['text'])
+    return Response(proxy_request.text)
 
 @cache.memoize(proxy_cache * 60)
 def make_proxy(url):
