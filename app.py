@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 from flask import Flask, Response, render_template, request
+from flask.ext.cache import Cache
+from urllib import urlencode
 import requests
 import os
-from flask.ext.cache import Cache
 
 app = Flask(__name__)
 
@@ -31,7 +32,15 @@ def api(endpoint):
 
 @cache.memoize(proxy_cache * 60)
 def make_proxy(url, params):
-    return requests.get(url, params=params)
+    # requests doesn't support multidict yet :(
+    # https://github.com/kennethreitz/requests/issues/1155
+
+    url += '?'
+    for key in params:
+        for val in params.getlist(key):
+            url += '%s=%s&' % (key, val)
+
+    return requests.get(url)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
