@@ -4,10 +4,14 @@ $(function(){
         var featured = {};
         $.each(payload, function(idx, release) {
             if (release.featured) {
-                featured[release.product] = release.version;
+                if (release.product in featured) {
+                    featured[release.product].push(release.version);
+                } else {
+                    featured[release.product] = [release.version];
+                }
             }
         });
-        $.each(featured, function(product, version) {
+        $.each(featured, function(product, versions) {
             $('#product-list')
                 .append('<a href="' + product + '">' +
                         '<li>' +
@@ -15,12 +19,16 @@ $(function(){
                         '<img src="/static/' + product + '.png">' +
                         '</li>' +
                         '</a>');
+            crashesPerAdu(product, versions);
         });
     });
 
-    function crashTrends(product, version) {
-        $.getJSON(api_url + 'CrashTrends/?end_date=2014-01-21&product=' + product + '&start_date=2014-01-19&version=' + version, function(payload) {
-            $.each(payload.crashtrends, function(idx, trend) {
+    function crashesPerAdu(product, versions) {
+        $.getJSON(api_url + 'CrashesPerAdu/?product=' + product +
+            '&versions=' + versions.join('&versions='),
+            function(payload) {
+            $.each(payload.hits, function(productVersion, data) {
+                console.log(productVersion);
             });
         });
     }
