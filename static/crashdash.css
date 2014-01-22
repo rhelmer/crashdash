@@ -1,53 +1,13 @@
-article, header, nav, aside, section, footer {
-  background: hsla(200, 30%, 30%, .4);
-}
-
-body > article {
-  width: 1024px;
-  margin: 0 auto;
-}
-
-table{
-  border-collapse: collapse;
-  border: 1px solid black;
-  display: none;
-}
-
-table td{
-  border: 1px solid black;
-}
-
-article article {
-  overflow: hidden;
-  width: 750px;
-  margin: 20px 0;
-  padding: 5px;
-}
-
-aside {
-  width: 150px;
-  float: left;
-}
-
-section {
-  float: left;
-  width: 1024px;
-}
-
-#loading, #no-results, #resultsTable {
-  display: none;
-}
-
 ul {
   list-style: none;
 }
 
 li {
   text-align: center;
-  height: 100px;
+  height: 150px;
   width: 220px;
   background: hsla(200, 30%, 30%, .4);
-  margin: 5px;
+  margin: 15px;
   float: left;
   border-radius:20px;
 }

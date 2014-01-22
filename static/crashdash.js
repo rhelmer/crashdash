@@ -1,13 +1,21 @@
 $(function(){
     var api_url = '/api/';
+    var products = {'B2G': 'Firefox OS',
+                    'Firefox': 'Firefox Desktop',
+                    'FennecAndroid': 'Fennec',
+                    'MetroFirefox': 'Firefox Metro',
+                    'Thunderbird': 'Thunderbird',
+                    'SeaMonkey': 'SeaMonkey'}
     $.getJSON(api_url + 'CurrentVersions', function(payload) {
         var featured = {};
         $.each(payload, function(idx, release) {
             if (release.featured) {
-                if (release.product in featured) {
-                    featured[release.product].push(release.version);
-                } else {
-                    featured[release.product] = [release.version];
+                if (release.product in products) {
+                    if (release.product in featured) {
+                        featured[release.product].push(release.version);
+                    } else {
+                        featured[release.product] = [release.version];
+                    }
                 }
             }
         });
