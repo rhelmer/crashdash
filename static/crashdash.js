@@ -102,7 +102,7 @@ $(function(){
             $.each(payload.hits, function(idx, data) {
                     $.each(data, function(idx2, data2) {
                         if (idx2=='signatures') {
-                            $('#warnings').append('Exploding signatures:'+
+                            $('#warnings').append('Exploding signatures: '+
 						  '<a href="https://crash-stats.mozilla.com/explosive/">' 
 							+ data2 + '</a><br />');
                         };
