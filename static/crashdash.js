@@ -28,7 +28,7 @@ $(function(){
             '&versions=' + versions.join('&versions='),
             function(payload) {
             $.each(payload.hits, function(productVersion, data) {
-                console.log(productVersion);
+                var version = productVersion.split(':')[1];
             });
         });
     }
