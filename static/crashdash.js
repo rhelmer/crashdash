@@ -23,7 +23,8 @@ $(function(){
             var versions = featured[product];
             var productName = products[product];
             $('#product-list')
-                .append('<a href="' + product + '">' +
+                .append('<a ' +
+                        'href="https://crash-stats.allizom.org/home/products/' +                        product + '">' +
                         '<li>' +
                         productName + '<br>' +
                         '<img src="/static/' + product + '.png">' +
