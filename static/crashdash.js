@@ -19,16 +19,18 @@ $(function(){
                 }
             }
         });
-        $.each(featured, function(product, versions) {
+        for (product in products) {
+            var versions = featured[product];
+            var productName = products[product];
             $('#product-list')
                 .append('<a href="' + product + '">' +
                         '<li>' +
-                        product + '<br>' +
+                        productName + '<br>' +
                         '<img src="/static/' + product + '.png">' +
                         '</li>' +
                         '</a>');
             crashesPerAdu(product, versions);
-        });
+        }
     });
 
     function crashesPerAdu(product, versions) {
