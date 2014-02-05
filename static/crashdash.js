@@ -96,17 +96,14 @@ $(function(){
 
 
     function generateWarnings() {
-        var url = api_url + 'ExplosiveCrashes/?end_date=2014-01-22&start_date=2013-12-22';
+        var url = api_url + 'ExplosiveCrashes/' +
+            '?end_date=2014-01-22&start_date=2013-12-22';
         var payload = $.getJSON(url);
         $.getJSON(url, function(payload) {
             $.each(payload.hits, function(idx, data) {
-                    $.each(data, function(idx2, data2) {
-                        if (idx2=='signatures') {
-                            $('#warnings').append('Exploding signatures:'+
-						  '<a href="https://crash-stats.mozilla.com/explosive/">' 
-							+ data2 + '</a><br />');
-                        };
-                    });
+                $('#warnings').append('Exploding signatures:'+
+                  '<a href="https://crash-stats.mozilla.com/explosive/">' 
+                  + data.signatures + '</a><br />');
             });
         });
     }
