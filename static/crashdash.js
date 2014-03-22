@@ -18,7 +18,7 @@ $(function(){
             })
     });
 
-    d3.json(api_url + 'CurrentVersions', function(currentVersions) {
+    d3.json(api_url + 'CurrentVersions/', function(currentVersions) {
         var featured = {};
         currentVersions.forEach(function(release, i) {
             var productName = release.product;
@@ -30,32 +30,42 @@ $(function(){
                 }
             }
         });
+        d3.select('ul').selectAll('li')
+            .data(Object.keys(products))
+            .enter()
+            .append('li')
+            .text(function(d) { return products[d]; })
+            .attr('id', function(d) { return d; })
+            .append('img')
+            .attr({
+                'src': function(d) {
+                    return ('/static/' + d + '.png');
+                }
+            })
         Object.keys(products).forEach(function(productName) {
-            var url = api_url + 'CrashesPerAdu' + '?product=' + productName;
+            var url = api_url + 'CrashesPerAdu/' + '?product=' + productName;
             for (var i=0; i < featured[productName].length; i++) {
                 url += '&versions=' + featured[productName][i].version;
             }
+            var versions = [];
+            featured[productName].forEach(function(release) {
+                versions.push(release.version);
+            });
+            d3.select('li#' + productName).selectAll('div')
+                .data(versions)
+                .enter()
+                .append('p')
+                .text(function(d) {
+                    return d;
+                })
+                .attr('id', function(d) { return d; })
+                .attr('class', productName)
+
             d3.json(url, function(crashesPerAdu) {
-                d3.select('ul').selectAll('li')
-                    .data(Object.keys(products))
-                    .enter()
-                    .append('li')
-                    .text(function(d) { return products[d]; })
-                    .append('p')
-                    .text(function(d) {
-                        versions = [];
-                        featured[d].forEach(function(release) {
-                            versions.push(release.version);
-                            var productVersion = d + ':' + release.version;
-                        });
-                        return versions;
-                    })
-                    .append('img')
-                    .attr({
-                        'src': function(d) {
-                            return ('/static/' + d + '.png');
-                        }
-                    })
+                featured[productName].forEach(function(release) {
+                    var productVersion = productName + ':' + release.version;
+                    console.log(crashesPerAdu.hits[productVersion]);
+                });
             });
         });
     });
