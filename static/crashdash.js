@@ -58,15 +58,46 @@ $(function(){
                 .text(function(d) {
                     return d;
                 })
-                .attr('id', function(d) { return d; })
+                .attr('id', function(d) {
+                    var id = d.replace(/\./g, '_');
+                    return 'v' + id;
+                })
                 .attr('class', productName)
 
             d3.json(url, function(crashesPerAdu) {
                 featured[productName].forEach(function(release) {
                     var productVersion = productName + ':' + release.version;
-                    console.log(crashesPerAdu.hits[productVersion]);
+                    var id = release['version'].replace(/\./g, '_');
+                    var sel = 'p#v' + id + '.' + productName;
+                    var days = Object.keys(crashesPerAdu.hits[productVersion]);
+                    var data = [];
+                    days.forEach(function(day) {
+                        var adu = crashesPerAdu.hits[productVersion][day];
+                        data.push(adu.crash_hadu);
+                    });
+                    sparkLine(sel, data);
                 });
             });
         });
     });
 });
+
+function sparkLine(sel, data) {
+    var graph = d3.select(sel)
+        .append("svg:svg")
+        .attr("width", "10")
+        .attr("height", "10");
+
+    var x = d3.scale.linear().domain([0, 10]).range([0, 50]);
+    var y = d3.scale.linear().domain([0, 10]).range([0, 30]);
+
+    var line = d3.svg.line()
+        .x(function(d,i) { 
+            return x(i); 
+        })
+        .y(function(d) { 
+            return y(d); 
+        })
+        graph.append("svg:path")
+            .attr("d", line(data));
+}

@@ -18,10 +18,16 @@ li:nth-child(7n) {
 }
 
 .spark {
- float: right;
- clear: right;
+  float: right;
+  clear: right;
 }
 
 .warnings {
- background: rgb(200, 100, 100);
+  background: rgb(200, 100, 100);
+}
+
+path {
+  stroke: steelblue;
+  stroke-width: 1;
+  fill: none;
 }

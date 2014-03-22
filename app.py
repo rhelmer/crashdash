@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 
-api_url = 'https://crash-stats.allizom.org/api'
+api_url = 'https://crash-stats.mozilla.com/api'
 proxy_cache = 60 # minutes
 
 # Set up cache
