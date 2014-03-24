@@ -3,7 +3,6 @@ $(function(){
     var products = {'B2G': 'Firefox OS',
                     'Firefox': 'Firefox Desktop',
                     'FennecAndroid': 'Fennec Android',
-                    'MetroFirefox': 'Firefox Metro',
                     'Thunderbird': 'Thunderbird',
                     'SeaMonkey': 'SeaMonkey'}
 
@@ -31,7 +30,7 @@ $(function(){
             }
         });
         d3.select('ul').selectAll('li')
-            .data(Object.keys(products))
+            .data(d3.keys(products))
             .enter()
             .append('li')
             .text(function(d) { return products[d]; })
@@ -42,7 +41,7 @@ $(function(){
                     return ('/static/' + d + '.png');
                 }
             })
-        Object.keys(products).forEach(function(productName) {
+        d3.keys(products).forEach(function(productName) {
             var url = api_url + 'CrashesPerAdu/' + '?product=' + productName;
             for (var i=0; i < featured[productName].length; i++) {
                 url += '&versions=' + featured[productName][i].version;
@@ -51,53 +50,150 @@ $(function(){
             featured[productName].forEach(function(release) {
                 versions.push(release.version);
             });
-            d3.select('li#' + productName).selectAll('div')
-                .data(versions)
-                .enter()
-                .append('p')
-                .text(function(d) {
-                    return d;
-                })
-                .attr('id', function(d) {
-                    var id = d.replace(/\./g, '_');
-                    return 'v' + id;
-                })
-                .attr('class', productName)
 
             d3.json(url, function(crashesPerAdu) {
-                featured[productName].forEach(function(release) {
+                var graphData = {};
+                var sel = 'li#' + productName;
+                featured[productName].some(function(release) {
                     var productVersion = productName + ':' + release.version;
-                    var id = release['version'].replace(/\./g, '_');
-                    var sel = 'p#v' + id + '.' + productName;
-                    var days = Object.keys(crashesPerAdu.hits[productVersion]);
-                    var data = [];
+                    if (crashesPerAdu.hits[productVersion] === undefined) {
+                        return false;
+                    }
+                    var days = d3.keys(crashesPerAdu.hits[productVersion]);
+                    var data = {};
                     days.forEach(function(day) {
                         var adu = crashesPerAdu.hits[productVersion][day];
-                        data.push(adu.crash_hadu);
+                        data[day] = adu.crash_hadu;
                     });
-                    sparkLine(sel, data);
+                    graphData[release.version] = data;
+                    
                 });
+                drawGraph(sel, graphData);
             });
         });
     });
 });
 
-function sparkLine(sel, data) {
-    var graph = d3.select(sel)
-        .append("svg:svg")
-        .attr("width", "10")
-        .attr("height", "10");
-
-    var x = d3.scale.linear().domain([0, 10]).range([0, 50]);
-    var y = d3.scale.linear().domain([0, 10]).range([0, 30]);
-
+function drawGraph(sel, data) {
+    var margin = {top: 20, right: 80, bottom: 50, left: 50},
+        width = 300 - margin.left - margin.right,
+        height = 160 - margin.top - margin.bottom;
+    
+    var parseDate = d3.time.format("%Y-%m-%d").parse;
+    
+    var x = d3.time.scale()
+        .range([0, width]);
+    
+    var y = d3.scale.linear()
+        .range([height, 0]);
+    
+    var color = d3.scale.category10();
+    
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+    
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+    
     var line = d3.svg.line()
-        .x(function(d,i) { 
-            return x(i); 
+        .interpolate("basis")
+        .x(function(d) {
+            return x(d.date);
         })
-        .y(function(d) { 
-            return y(d); 
+        .y(function(d) {
+            return y(d.crashes);
+        });
+    
+    var svg = d3.select(sel).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    color.domain(
+        d3.keys(data).filter(function(version) {
+            return version;
         })
-        graph.append("svg:path")
-            .attr("d", line(data));
+    );
+
+    var dates = [];
+    d3.keys(data).forEach(function(version) {
+        d3.keys(data[version]).forEach(function(date) {
+            dates.push(parseDate(date));
+        });
+    });
+
+    var versions = color.domain().map(function(version) {
+        return {
+            version: version,
+            values: d3.keys(data[version]).sort().map(function(d) {
+                return {
+                    date: parseDate(d),
+                    crashes: data[version][d]};
+            })
+        };
+    });
+
+    x.domain(d3.extent(dates));
+
+    y.domain([
+        d3.min(versions, function(c) {
+            return d3.min(c.values, function(v) {
+                return v.crashes;
+            });
+        }),
+        d3.max(versions, function(c) {
+            return d3.max(c.values, function(v) {
+                return v.crashes;
+            });
+        })
+    ]);
+  
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+  
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Crashes / 100 ADI");
+  
+    var version = svg.selectAll(".version")
+        .data(versions)
+      .enter().append("g")
+        .attr("class", "version");
+  
+    version.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) {
+            return line(d.values);
+        })
+        .style("stroke", function(d) {
+            return color(d.version);
+        });
+  
+    version.append("text")
+        .datum(function(d) {
+            return {
+                version: d.version,
+                value: d.values[d.values.length - 1]
+            };
+        })
+        .attr("transform", function(d) {
+            return "translate(" + x(d.value.date) + "," +
+                   y(d.value.crashes) + ")";
+        })
+        .attr("x", 3)
+        .attr("dy", ".35em")
+        .text(function(d) {
+            return d.version;
+        });
 }

@@ -13,6 +13,10 @@ li {
   border-radius:20px;
 }
 
+svg {
+  font: 10px sans-serif;
+}
+
 li:nth-child(7n) { 
   clear: left;
 }
@@ -26,8 +30,20 @@ li:nth-child(7n) {
   background: rgb(200, 100, 100);
 }
 
-path {
-  stroke: steelblue;
-  stroke-width: 1;
+.axis path,
+.axis line {
   fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
