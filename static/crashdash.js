@@ -2,6 +2,7 @@ $(function(){
     var api_url = '/api/';
     var products = {'B2G': 'Firefox OS',
                     'Firefox': 'Firefox Desktop',
+                    'MetroFirefox': 'Firefox for Metro',
                     'FennecAndroid': 'Fennec Android',
                     'Thunderbird': 'Thunderbird',
                     'SeaMonkey': 'SeaMonkey'}
@@ -35,12 +36,14 @@ $(function(){
             .append('li')
             .text(function(d) { return products[d]; })
             .attr('id', function(d) { return d; })
-            .append('img')
-            .attr({
-                'src': function(d) {
-                    return ('/static/' + d + '.png');
+            .style({
+                'background-image': function(d) {
+                    return 'url(/static/' + d + '.png';
                 }
             })
+            .style('background-repeat', 'no-repeat')
+            .style('background-position', '100% 0');
+
         d3.keys(products).forEach(function(productName) {
             var url = api_url + 'CrashesPerAdu/' + '?product=' + productName;
             for (var i=0; i < featured[productName].length; i++) {
@@ -63,21 +66,26 @@ $(function(){
                     var data = {};
                     days.forEach(function(day) {
                         var adu = crashesPerAdu.hits[productVersion][day];
-                        data[day] = adu.crash_hadu;
+                        // TODO hack for B2G
+                        if (productName === 'B2G') {
+                            data[day] = adu.report_count;
+                        } else {
+                            data[day] = adu.crash_hadu;
+                        }
                     });
                     graphData[release.version] = data;
                     
                 });
-                drawGraph(sel, graphData);
+                drawGraph(sel, productName, graphData);
             });
         });
     });
 });
 
-function drawGraph(sel, data) {
-    var margin = {top: 20, right: 80, bottom: 50, left: 50},
+function drawGraph(sel, productName, data) {
+    var margin = {top: 50, right: 80, bottom: 50, left: 50},
         width = 300 - margin.left - margin.right,
-        height = 160 - margin.top - margin.bottom;
+        height = 220 - margin.top - margin.bottom;
     
     var parseDate = d3.time.format("%Y-%m-%d").parse;
     
@@ -91,7 +99,8 @@ function drawGraph(sel, data) {
     
     var xAxis = d3.svg.axis()
         .scale(x)
-        .orient("bottom");
+        .orient("bottom").ticks(4)
+        .tickFormat(d3.time.format('%m-%d'));
     
     var yAxis = d3.svg.axis()
         .scale(y)
@@ -153,8 +162,18 @@ function drawGraph(sel, data) {
   
     svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .attr("transform", "translate(0," + (height + 25) +")")
+        .call(xAxis)
+        .selectAll("text")
+            .attr("transform", function(d) {
+                return "rotate(-65)"
+            });
+
+    var yaxis_label = 'Crashes / 100 ADI';
+    // TODO hack for B2G
+    if (productName === 'B2G') {
+        yaxis_label = 'Crashes (No ADI)';
+    }
   
     svg.append("g")
         .attr("class", "y axis")
@@ -164,7 +183,7 @@ function drawGraph(sel, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Crashes / 100 ADI");
+        .text(yaxis_label);
   
     var version = svg.selectAll(".version")
         .data(versions)
