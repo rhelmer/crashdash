@@ -1,3 +1,7 @@
+body {
+  background: hsla(200, 30%, 30%, .4);
+}
+
 ul {
   padding: 0;
   position: 0;
