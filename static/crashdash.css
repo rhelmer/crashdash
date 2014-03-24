@@ -1,4 +1,6 @@
 ul {
+  padding: 0;
+  position: 0;
   list-style: none;
 }
 
@@ -8,9 +10,11 @@ li {
   height: 240px;
   width: 280px;
   background: hsla(200, 30%, 30%, .4);
-  margin: 15px;
+  margin: 2%;
   float: left;
   border-radius:20px;
+  font: 25px sans-serif;
+  font-family: Impact;
 }
 
 svg {
