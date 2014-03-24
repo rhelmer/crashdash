@@ -9,12 +9,13 @@ $(function(){
 
     d3.json(api_url + 'ExplosiveCrashes/', function(explosiveCrashes) {
         var crashes = explosiveCrashes['hits'];
-        d3.select('#warnings').selectAll('div')
+        d3.select('#warnings').selectAll('article')
             .data(crashes)
             .enter()
-            .append('span')
+            .append('p')
             .text(function(d) { 
-                return 'Explosive crash: ' + d;
+                console.log(d);
+                return 'Explosive signature: ' + d.signatures;
             })
     });
 

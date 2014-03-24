@@ -13,7 +13,7 @@ li {
   padding: 5px;
   height: 240px;
   width: 280px;
-  background: hsla(200, 30%, 30%, .4);
+  background: hsla(200, 30%, 90%, .4);
   margin: 2%;
   float: left;
   border-radius:20px;
