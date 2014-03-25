@@ -21,6 +21,10 @@ li {
   font-family: Impact;
 }
 
+li:hover {
+  background: hsla(200, 30%, 90%, .6);
+}
+
 svg {
   font: 10px sans-serif;
 }
@@ -55,3 +59,17 @@ li:nth-child(7n) {
   stroke-width: 1.5px;
 }
 
+.report {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: hsla(200, 30%, 90%, .97);
+}
+
+#close-report {
+  cursor: pointer;
+}
