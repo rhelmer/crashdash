@@ -66,11 +66,13 @@ d3.json(api_url + 'CurrentVersions/', function(currentVersions) {
                 }
                 var days = d3.keys(crashesPerAdu.hits[productVersion]);
                 var data = {};
+                var yaxisLabel = 'Crashes / 100 ADI';
                 days.forEach(function(day) {
                     var adu = crashesPerAdu.hits[productVersion][day];
                     // TODO hack for B2G
                     if (productName === 'B2G') {
                         data[day] = adu.report_count;
+                        yAxisLabel = 'Crashes (No ADI)';
                     } else {
                         data[day] = adu.crash_hadu;
                     }
@@ -78,7 +80,7 @@ d3.json(api_url + 'CurrentVersions/', function(currentVersions) {
                 graphData[release.version] = data;
                 
             });
-            drawGraph(sel, productName, graphData);
+            drawGraph(sel, productName, graphData, yAxisLabel);
         });
     });
 });

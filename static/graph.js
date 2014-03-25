@@ -1,4 +1,4 @@
-function drawGraph(sel, productName, data) {
+function drawGraph(sel, productName, data, yAxisLabel) {
     var margin = {top: 50, right: 80, bottom: 50, left: 50},
         width = 300 - margin.left - margin.right,
         height = 220 - margin.top - margin.bottom;
@@ -85,12 +85,6 @@ function drawGraph(sel, productName, data) {
                 return "rotate(-65)"
             });
 
-    var yaxis_label = 'Crashes / 100 ADI';
-    // TODO hack for B2G
-    if (productName === 'B2G') {
-        yaxis_label = 'Crashes (No ADI)';
-    }
-  
     svg.append("g")
         .attr("class", "y axis")
         .call(yAxis)
@@ -99,7 +93,7 @@ function drawGraph(sel, productName, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text(yaxis_label);
+        .text(yAxisLabel);
   
     var version = svg.selectAll(".version")
         .data(versions)
