@@ -157,9 +157,6 @@ function topcrashReport(productName) {
             .text(function(d) {
                 return d;
             });
-            
-        tcbs.crashes.forEach(function(topcrash) {
-        });
     });
 }
 
