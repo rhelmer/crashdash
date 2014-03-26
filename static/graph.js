@@ -119,6 +119,7 @@ function drawGraph(sel, productName, data, yAxisLabel) {
         .style('padding', '5px')
         .style('font-size', '14px')
         .style('font-family', 'sans-serif')
+        .style('cursor', 'pointer')
         .on('click', function(d) {
             topcrashReport(productName, d.version);
         })
