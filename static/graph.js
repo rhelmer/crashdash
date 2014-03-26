@@ -122,6 +122,10 @@ function drawGraph(sel, productName, data, yAxisLabel) {
         })
         .attr("x", 3)
         .attr("dy", ".35em")
+        .style("fill", function(d) {
+            return color(d.version);
+        })
+        .style("margin", '15px')
         .text(function(d) {
             return d.version;
         });
