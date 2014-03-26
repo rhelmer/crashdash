@@ -42,9 +42,6 @@ d3.json(api_url + 'CurrentVersions/', function(currentVersions) {
         })
         .style('background-repeat', 'no-repeat')
         .style('background-position', '100% 0')
-        .on('click', function(d) {
-            topcrashReport(d);
-        });
 
     d3.keys(products).forEach(function(productName) {
         var url = api_url + 'CrashesPerAdu/' + '?product=' + productName;
@@ -84,3 +81,41 @@ d3.json(api_url + 'CurrentVersions/', function(currentVersions) {
         });
     });
 });
+
+function topcrashReport(productName, version) {
+    d3.select('.report')
+        .style('display', 'inline');
+    d3.json(api_url + 'TCBS/?product=' + productName
+            + '&version=' + version, function(tcbs) {
+        d3.select('#topcrasher')
+            .append('table')
+            .style('border-collapse', 'collapse')
+            .style('border', '2px black solid')
+
+            .selectAll('tr')
+            .data(tcbs.crashes)
+            .enter().append('tr')
+
+            .selectAll('td')
+            .data(function(d) {
+                console.log(d);
+                return [d.currentRank,
+                        (d.percentOfTotal * 100).toFixed(2) + '%',
+                        d.changeInRank, d.count, d.signature];
+            })
+            .enter().append('td')
+            .style('border', '1px black solid')
+            .style('padding', '5px')
+            .text(function(d) {
+                return d;
+            });
+    });
+}
+
+d3.select('#close-report')
+    .on('click', function(d) {
+        d3.select('#topcrasher table')
+            .remove();
+        d3.select('.report')
+            .style('display', 'none');
+    });

@@ -109,59 +109,20 @@ function drawGraph(sel, productName, data, yAxisLabel) {
             return color(d.version);
         });
   
-    version.append("text")
-        .datum(function(d) {
-            return {
-                version: d.version,
-                value: d.values[d.values.length - 1]
-            };
-        })
-        .attr("transform", function(d) {
-            return "translate(" + x(d.value.date) + "," +
-                   y(d.value.crashes) + ")";
-        })
-        .attr("x", 3)
-        .attr("dy", ".35em")
-        .style("fill", function(d) {
+    d3.select(sel).selectAll('span')
+        .data(versions)
+      .enter()
+        .append('span')
+        .style('color', function(d) {
             return color(d.version);
         })
-        .style("margin", '15px')
+        .style('padding', '5px')
+        .style('font-size', '14px')
+        .style('font-family', 'sans-serif')
+        .on('click', function(d) {
+            topcrashReport(productName, d.version);
+        })
         .text(function(d) {
             return d.version;
         });
 }
-
-function topcrashReport(productName) {
-    d3.select('.report')
-        .style('display', 'inline');
-    d3.json(api_url + 'TCBS/?product=Firefox&version=30.0a2', function(tcbs) {
-        d3.select('#topcrasher')
-            .append('table')
-            .style('border-collapse', 'collapse')
-            .style('border', '2px black solid')
-
-            .selectAll('tr')
-            .data(tcbs.crashes)
-            .enter().append('tr')
-
-            .selectAll('td')
-            .data(function(d) {
-                console.log(d);
-                return [d.currentRank,
-                        (d.percentOfTotal * 100).toFixed(2) + '%',
-                        d.changeInRank, d.count, d.signature];
-            })
-            .enter().append('td')
-            .style('border', '1px black solid')
-            .style('padding', '5px')
-            .text(function(d) {
-                return d;
-            });
-    });
-}
-
-d3.select('#close-report')
-    .on('click', function(d) {
-        d3.select('.report')
-            .style('display', 'none');
-    });
