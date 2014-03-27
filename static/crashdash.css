@@ -70,6 +70,10 @@ li:nth-child(7n) {
   background: hsla(200, 30%, 90%, .97);
 }
 
-#close-report {
+.close-report {
+  cursor: pointer;
+}
+
+table {
   cursor: pointer;
 }
