@@ -95,10 +95,14 @@ function topcrashReport(productName, version) {
             .selectAll('tr')
             .data(tcbs.crashes)
             .enter().append('tr')
+            .on('click', function(d) {
+                d3.select('#topcrasher table')
+                    .remove();
+                reportListReport(d.signature);
+            })
 
             .selectAll('td')
             .data(function(d) {
-                console.log(d);
                 return [d.currentRank,
                         (d.percentOfTotal * 100).toFixed(2) + '%',
                         d.changeInRank, d.count, d.signature];
@@ -112,9 +116,76 @@ function topcrashReport(productName, version) {
     });
 }
 
-d3.select('#close-report')
+function reportListReport(signature) {
+    d3.select('#reportlist')
+        .style('display', 'inline');
+    d3.json(api_url + 'ReportList/?end_date=2014-03-26&signature=' + signature + '&start_date=2014-03-23', function(reportList) {
+        d3.select('#reportlist')
+            .append('table')
+            .style('border-collapse', 'collapse')
+            .style('border', '2px black solid')
+
+            .selectAll('tr')
+            .data(reportList.hits)
+            .enter().append('tr')
+            .on('click', function(d) {
+                d3.select('#reportlist table')
+                    .remove();
+                reportIndexReport(d.uuid);
+            })
+
+            .selectAll('td')
+            .data(function(d) {
+                return [d.date_processed, d.duplicate_of, d.product, d.version,
+                        d.build, d.os_name, d.cpu_name, d.reason, d.address,
+                        d.uptime, d.install_time];
+            })
+            .enter().append('td')
+            .style('border', '1px black solid')
+            .style('padding', '5px')
+            .text(function(d) {
+                return d;
+            });
+    });
+}
+
+function reportIndexReport(uuid) {
+    d3.select('#reportindex')
+        .style('display', 'inline');
+    d3.json(api_url + 'ProcessedCrash/?crash_id=' + uuid,
+            function(processedCrash) {
+        d3.select('#reportindex')
+            .append('table')
+            .style('border-collapse', 'collapse')
+            .style('border', '2px black solid')
+
+            .selectAll('tr')
+            .data(d3.keys(processedCrash))
+            .enter().append('tr')
+
+            .selectAll('td')
+            .data(function(d) {
+                if (d == 'dump' || d == 'json_dump') {
+                    return false;
+                }
+                return [d, processedCrash[d]];
+            })
+            .enter().append('td')
+            .style('border', '1px black solid')
+            .style('padding', '5px')
+            .text(function(d) {
+                return d;
+            });
+    });
+}
+
+d3.select('.close-report')
     .on('click', function(d) {
         d3.select('#topcrasher table')
+            .remove();
+        d3.select('#reportlist table')
+            .remove();
+        d3.select('#reportindex table')
             .remove();
         d3.select('.report')
             .style('display', 'none');
